@@ -13,11 +13,15 @@ public class SectionDAOImpl implements SectionDAO {
 
         try (
                 Connection connection = ConnectionFactory.getConnection();
-                Statement stmt = connection.createStatement();
-        ){
+                PreparedStatement stmt = connection.prepareStatement(" INSERT INTO Section " +
+                        " VALUES ( ? , ? , ? ); ");
+        ) {
 
-            int nbrLinesAffected = stmt.executeUpdate(" INSERT INTO Section VALUES " +
-                    "("+section.getId()+" , \""+ section.getName() +"\" , " +section.getDelegateId()+ "); ");
+            stmt.setInt(1, section.getId());
+            stmt.setString(2, section.getName());
+            stmt.setInt(3, section.getDelegateId());
+
+            int nbrLinesAffected = stmt.executeUpdate();
 
             return nbrLinesAffected > 0;
 
@@ -40,7 +44,6 @@ public class SectionDAOImpl implements SectionDAO {
         return new Section(id, name, delegateId);
 
     }
-
     @Override
     public Section getOne(Integer id) {
 
@@ -61,7 +64,6 @@ public class SectionDAOImpl implements SectionDAO {
         return null;
 
     }
-
     @Override
     public List<Section> getAll() {
         try(
@@ -96,6 +98,7 @@ public class SectionDAOImpl implements SectionDAO {
             stmt.setString(1, section.getName());
             stmt.setInt(2, section.getDelegateId());
             stmt.setInt(3, section.getId());
+
             int affected = stmt.executeUpdate();
             return affected > 0;
         }
